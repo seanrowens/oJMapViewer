@@ -1,0 +1,72 @@
+Thu 08 Dec 2022 10:35:07 PM EST
+
+Ugh. Eclipse issues.
+
+So at first Eclipse defaulted to a JRE17 tha MAY have been JRE only?
+
+openjdk11 IS installed.
+
+(base) sean@rockyraccoon:~$ java --version
+openjdk 11.0.17 2022-10-18
+OpenJDK Runtime Environment (build 11.0.17+8-post-Ubuntu-1ubuntu220.04)
+OpenJDK 64-Bit Server VM (build 11.0.17+8-post-Ubuntu-1ubuntu220.04, mixed mode, sharing)
+(base) sean@rockyraccoon:~$ which java
+/usr/bin/java
+(base) sean@rockyraccoon:~$ ls -l /usr/bin/java
+lrwxrwxrwx 1 root root 22 Nov 18  2021 /usr/bin/java -> /etc/alternatives/java
+(base) sean@rockyraccoon:~$ ls /etc/alternatives/ja
+jaotc           jar.1.gz        jarsigner.1.gz  java.1.gz       javac.1.gz      javadoc.1.gz    javap.1.gz
+jar             jarsigner       java            javac           javadoc         javap
+(base) sean@rockyraccoon:~$ ls /etc/alternatives/java
+/etc/alternatives/java
+(base) sean@rockyraccoon:~$ ls -l  /etc/alternatives/java
+lrwxrwxrwx 1 root root 43 Nov 18  2021 /etc/alternatives/java -> /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+(base) sean@rockyraccoon:~$ ls /usr/lib/jvm/java-1
+java-1.11.0-openjdk-amd64/ java-11-openjdk-amd64/
+(base) sean@rockyraccoon:~$ ls /usr/lib/jvm/java-11-openjdk-amd64/
+bin  conf  docs  include  jmods  legal  lib  man  release
+(base) sean@rockyraccoon:~$
+
+So first I needed to open the workspace preferences and add
+it... which turned out to be a huge issue.
+
+Window->Preferences, Installed JREs, then click on Search button and
+navigate to /usr/lib/jvm and click Open button
+
+Then check next to java-11-openjdk-amd64
+
+But wait, we're not done yet.  Then right click on the project,
+Properties, in the dialog click Java build path , click on the current
+JRE under Modulepath, then click Edit button.  Click on the radio
+button next to "Workspace default" which is now java-11-openjdk-amd6.
+
+But wait, there's more!  Eclipse couldn't find JFrame/JPanel;
+
+https://stackoverflow.com/questions/23209125/unable-to-import-javax-swing-jframe
+
+In package explorer for the project, open module-info.java and add
+theline "requires java.desktop;" between the {} brackets.
+
+Whew.
+
+JMapViewer, sources and binary;
+
+https://github.com/openstreetmap/svn-archive/blob/main/applications/viewer/jmapviewer/releases/2.14/JMapViewer-2.14-Source.zip?raw=true
+https://github.com/openstreetmap/svn-archive/blob/main/applications/viewer/jmapviewer/releases/2.14/JMapViewer-2.14.zip?raw=true
+
+
+Similar problem with "inaccessible" import for jmapviewer, even after
+i added the jar to the build path.
+
+According to this thread;
+
+https://www.eclipse.org/forums/index.php/t/1103208/
+
+You can just delete module-info.java and it will work.
+
+So I did and it does indeed seem to work now.  At least no more error on the import.
+
+More on modules here;
+
+https://www.eclipse.org/community/eclipse_newsletter/2018/june/java9andbeyond.php
+
